@@ -22,7 +22,7 @@ function escapeHtml(value) {
 }
 
 function getCardHtml(post, index, basePath) {
-  const imagePath = post.image || "src/img/noimg.png";
+  const imagePath = (post.image || "src/img/noimg.png").replace(/^((\.\.\/)+)/, "");
   const title = escapeHtml(post.title || "Untitled");
   const summary = escapeHtml(post.summary || "");
   const tag = escapeHtml(post.tag || "その他");
@@ -228,5 +228,7 @@ function renderPosts() {
 
   renderList();
 }
+
+window.renderPosts = renderPosts;
 
 document.addEventListener("DOMContentLoaded", renderPosts);
