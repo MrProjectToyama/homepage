@@ -128,9 +128,14 @@ class MarkdownArticleLoader {
     for (const filePath of filePaths) {
       const article = await this.loadArticle(filePath);
       if (article) {
+        // MDファイルのパスからHTMLファイルのパスに変換
+        // blog/md/xxx.md → blog/html/xxx.html
+        const htmlUrl = filePath.replace(/blog\/md\//g, 'blog/html/').replace(/\.md$/, '.html');
+        
         posts.push({
           ...article.metadata,
-          summary: article.metadata.summary || ''
+          summary: article.metadata.summary || '',
+          url: htmlUrl  // URLを HTMLファイルパスに設定
         });
       }
     }
