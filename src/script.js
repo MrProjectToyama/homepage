@@ -129,8 +129,39 @@ function renderPosts() {
   const posts = getValidPosts(sourcePosts);
   let selectedTag = "すべて";
 
+  // Normalize post URLs so they point to blog/html/*.html
+  const normalizePostUrl = (post) => {
+    if (!post || !post.url) return post;
+
+    let url = post.url;
+
+    // If the URL points to a markdown file, convert to html path
+    if (url.endsWith('.md')) {
+      // blog/md/xxx.md -> blog/html/xxx.html
+      url = url.replace(/blog\/md\//, 'blog/html/').replace(/\.md$/, '.html');
+    }
+
+    // If it points to blog/...html but missing html dir, insert html/
+    // e.g. blog/blog-launched-20260424.html -> blog/html/blog-launched-20260424.html
+    const blogHtmlPrefix = 'blog/html/';
+    if (url.startsWith('blog/') && !url.startsWith(blogHtmlPrefix)) {
+      // avoid double-inserting if it already contains 'blog/html/'
+      const parts = url.split('/');
+      // insert 'html' after 'blog'
+      parts.splice(1, 0, 'html');
+      url = parts.join('/');
+    }
+
+    // Update post.url in-place for further usage
+    post.url = url;
+    return post;
+  };
+
   // 日付の新しい順にソート
   posts.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  // Normalize URLs for all posts
+  posts.forEach((p) => normalizePostUrl(p));
 
   if (posts.length === 0) {
     list.innerHTML = "<p>表示可能な投稿はまだありません。tag を確認してください。</p>";
