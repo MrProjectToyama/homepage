@@ -12,6 +12,8 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="../src/styles.css" />
+    <!-- Marked.js (Markdownパース) -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   </head>
   <body>
     <header class="site-header">
@@ -44,5 +46,34 @@
     <footer class="site-footer">
       <p>© 2026 Toyama University MR Project</p>
     </footer>
+
+    <!-- Markdown記事読み込みシステム -->
+    <script src="../src/markdown-loader.js"></script>
+    <script>
+      // ページロード時に記事を読み込む
+      // URLパラメータから記事ファイルを取得します
+      // 例: template.html?article=sample-article.md
+      
+      document.addEventListener('DOMContentLoaded', async () => {
+        const params = new URLSearchParams(window.location.search);
+        const articleFile = params.get('article');
+        
+        if (articleFile) {
+          const loader = new MarkdownArticleLoader();
+          const article = document.querySelector('.article-panel');
+          
+          // Markdownファイルを読み込んでテンプレートに適用
+          await loader.applyArticleToTemplate(article, `../blog/${articleFile}`);
+          
+          // パンくずのタイトルも更新
+          const crumb = document.querySelector('.crumb');
+          const title = document.querySelector('.article-panel h2');
+          if (crumb && title) {
+            const breadcrumbText = crumb.textContent.split(' / ');
+            crumb.innerHTML = `<a class="text-link" href="../index.html">Home</a> / <a class="text-link" href="../blog.html">Blog</a> / ${title.textContent}`;
+          }
+        }
+      });
+    </script>
   </body>
 </html>

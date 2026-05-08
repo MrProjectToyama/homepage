@@ -52,7 +52,40 @@
       <p>© 2026 Toyama University MR Project</p>
     </footer>
 
-    <script src="src/blog-data.js"></script>
+    <script src="src/markdown-loader.js"></script>
     <script src="src/script.js"></script>
+    
+    <!-- Markdownブログ統合スクリプト -->
+    <script>
+      /**
+       * 記事をブログリストに表示するヘルパー関数
+       * markdown-loader.jsで読み込んだ記事データを既存のスクリプトと統合
+       */
+      async function loadMarkdownBlogPosts() {
+        const loader = new MarkdownArticleLoader();
+        
+        // blog/mdディレクトリのMarkdownファイルを指定
+        const markdownFiles = [
+          'blog/md/blog-launched-20260424.md',
+          'blog/md/sample-article.md'
+        ];
+        
+        try {
+          const markdownPosts = await loader.loadBlogPosts(markdownFiles);
+          
+          // Markdownの記事をBLOG_POSTSに設定
+          window.BLOG_POSTS = markdownPosts;
+          
+          console.log('Markdownブログ記事を読み込みました:', window.BLOG_POSTS);
+        } catch (error) {
+          console.error('Markdownブログの読み込みに失敗:', error);
+        }
+      }
+      
+      // ページロード時にMarkdown記事を読み込む
+      document.addEventListener('DOMContentLoaded', async () => {
+        await loadMarkdownBlogPosts();
+      });
+    </script>
   </body>
 </html>
