@@ -66,8 +66,8 @@
         
         // blog/mdディレクトリのMarkdownファイルを指定
         const markdownFiles = [
-          'blog/html/blog-launched-20260424.html',
-          'blog/html/sample-article.html'
+          'blog/md/blog-launched-20260424.md',
+          'blog/md/sample-article.md'
         ];
         
         try {
@@ -77,6 +77,11 @@
           window.BLOG_POSTS = markdownPosts;
           
           console.log('Markdownブログ記事を読み込みました:', window.BLOG_POSTS);
+
+          // script.jsの初回描画後に再描画してカードを確実に表示する
+          if (typeof window.renderPosts === 'function') {
+            window.renderPosts();
+          }
         } catch (error) {
           console.error('Markdownブログの読み込みに失敗:', error);
         }
