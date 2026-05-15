@@ -1,0 +1,38 @@
+---
+import '../assets/styles/global.css';
+// Use import.meta.glob to avoid runtime issues with Astro.glob
+const modules = import.meta.glob('../pages/post/*.md', { eager: true }) as Record<string, any>;
+const allPosts = [];
+for (const path in modules) {
+    const mod = modules[path];
+    const segments = String(path).split('/');
+    const last = segments[segments.length - 1] || '';
+    const fileName = last.replace(/\.md$/, '');
+    allPosts.push({
+        date: mod.frontmatter?.date || null,
+        title: mod.frontmatter?.title || fileName,
+        summary: mod.frontmatter?.summary || '',
+        tag: mod.frontmatter?.tag || 'その他',
+        url: `/post/${fileName}`,
+        image: mod.frontmatter?.image || '/src/assets/thumbnail/noimg.png',
+    });
+}
+// Sort by date desc
+const postsForClient = allPosts.sort((a, b) => {
+    if (!a.date) return 1;
+    if (!b.date) return -1;
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
+});
+---
+
+<section id="blog" class="panel" aria-labelledby="blog-title">
+    <div class="section-head">
+        <h3 id="blog-title">Blog</h3>
+        <a class="text-link" href="/blog.html">View All Posts</a>
+    </div>
+    <p class="blog-note">新しい投稿順で表示されます。</p>
+    <div id="blog-list" class="blog-list" data-limit="3" aria-live="polite"></div>
+</section>
+
+<!-- Pass posts to client-side renderer -->
+<script id="blog-posts" type="application/json" set:html={JSON.stringify(postsForClient)}></script>
